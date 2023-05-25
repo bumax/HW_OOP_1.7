@@ -1,13 +1,13 @@
 package model.base;
 
-public abstract class Weapon {
-    public Weapon(String name, int damage, int minLevel) {
+public abstract class Armor {
+    public Armor(String name, int armor, int minLevel) {
         this.name = name;
-        this.damage = damage;
+        this.armor = armor;
         this.minLevel = minLevel;
     }
-    public int getDamage() {
-        return damage;
+    public int getArmor() {
+        return armor;
     }
     public int getMinLevel() {
         return minLevel;
@@ -15,7 +15,7 @@ public abstract class Weapon {
     public String getName() {
         return name;
     }
-    private int damage;
+    private int armor;
     private int minLevel;
     private String name;
 }

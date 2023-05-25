@@ -1,11 +1,17 @@
 package model.base;
 
+import model.weapons.Hands;
+
+import java.util.Random;
+
 /***
  * Базовый класс персонажа
  */
 public abstract class Character {
-    public Character(String name) {
+    public Character(String name, Weapon weapon, Armor armor) {
         this.name = name;
+        this.wp = weapon;
+        this.armor = armor;
         level = 0;
         healthPoints = 100;
         maxHP = 100;
@@ -19,7 +25,7 @@ public abstract class Character {
         return level;
     }
 
-    public int getArmor() {
+    public Armor getArmor() {
         return armor;
     }
 
@@ -40,7 +46,8 @@ public abstract class Character {
     }
 
     public void setManaPoints(int manaPoints) {
-        this.manaPoints = increaseVal(this.manaPoints, manaPoints, maxMana);;
+        this.manaPoints = increaseVal(this.manaPoints, manaPoints, maxMana);
+        ;
     }
 
     public int getMaxMana() {
@@ -52,7 +59,8 @@ public abstract class Character {
     }
 
     public void setExperience(int experience) {
-        this.experience = increaseVal(this.experience, experience, maxXP);;
+        this.experience = increaseVal(this.experience, experience, maxXP);
+        ;
     }
 
     public int getMaxXP() {
@@ -65,7 +73,7 @@ public abstract class Character {
 
     private String name;
     private int level;
-    private int armor;
+    private Armor armor;
     private int healthPoints;
     private int maxHP;
     private int manaPoints;
@@ -73,10 +81,17 @@ public abstract class Character {
     private int experience;
     private int maxXP;
 
-    public int setDamage(int damage){
-        int damageMultiplier =  damage / (damage + armor);
+    private Weapon wp = new Hands();
+
+    public void attack(Character target) {
+        var rnd = new Random();
+        target.setDamage(rnd.nextInt(0, wp.getDamage()) + level * wp.getDamage() / 7);
+    }
+
+    public int setDamage(int damage) {
+        int damageMultiplier = damage / (damage + armor.getArmor());
         damage *= damageMultiplier;
-        if(damage >= healthPoints)
+        if (damage >= healthPoints)
             healthPoints = 0;
         else
             healthPoints -= damage;
@@ -86,14 +101,14 @@ public abstract class Character {
     /**
      * Массив с необходимым XP для перехода на следующий уровень
      */
-    private static final int[] levelUp = {5,10,50,100,500,1000,5000,10000};
+    private static final int[] levelUp = {5, 10, 50, 100, 500, 1000, 5000, 10000};
 
     /**
      * Обновляяем левел персонажа
-      */
-    public void updateLevel(){
+     */
+    public void updateLevel() {
         // проверяем уровень персонажа
-        if(this.level < 8 && this.experience >= maxXP){
+        if (this.level < 8 && this.experience >= maxXP) {
             // если очки XP чуть больше, чем требуется дл перехода, то переносим остатки на следующий уровень
             this.experience = this.experience - maxXP;
             // апаем левел
@@ -104,10 +119,11 @@ public abstract class Character {
         }
 
     }
-    private int increaseVal(int val, int inc, int limit){
-        if(inc > 0)
+
+    private int increaseVal(int val, int inc, int limit) {
+        if (inc > 0)
             val += inc;
-        if(val > limit)
+        if (val > limit)
             val = limit;
         return val;
     }
