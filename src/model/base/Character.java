@@ -15,8 +15,6 @@ public abstract class Character {
         level = 0;
         healthPoints = 100;
         maxHP = 100;
-        manaPoints = 100;
-        maxMana = 100;
         experience = 0;
         maxXP = levelUp[level];
     }
@@ -41,19 +39,6 @@ public abstract class Character {
         return maxHP;
     }
 
-    public int getManaPoints() {
-        return manaPoints;
-    }
-
-    public void setManaPoints(int manaPoints) {
-        this.manaPoints = increaseVal(this.manaPoints, manaPoints, maxMana);
-        ;
-    }
-
-    public int getMaxMana() {
-        return maxMana;
-    }
-
     public int getExperience() {
         return experience;
     }
@@ -71,13 +56,15 @@ public abstract class Character {
         return name;
     }
 
+    public Weapon getWeapon() {
+        return wp;
+    }
+
     private String name;
     private int level;
     private Armor armor;
     private int healthPoints;
     private int maxHP;
-    private int manaPoints;
-    private int maxMana;
     private int experience;
     private int maxXP;
 
@@ -85,17 +72,18 @@ public abstract class Character {
 
     public void attack(Character target) {
         var rnd = new Random();
-        target.setDamage(rnd.nextInt(0, wp.getDamage()) + level * wp.getDamage() / 7);
+        var damage = rnd.nextInt(0, wp.getDamage()) + level * wp.getDamage() / 7;
+        target.setDamage(damage);
+        setExperience((int) Math.pow(2, target.getLevel()));
     }
 
-    public int setDamage(int damage) {
-        int damageMultiplier = damage / (damage + armor.getArmor());
+    public void setDamage(int damage) {
+        Double damageMultiplier = (double) (damage) / (double)(damage + armor.getArmor());
         damage *= damageMultiplier;
-        if (damage >= healthPoints)
-            healthPoints = 0;
+        if (damage >= this.healthPoints)
+            this.healthPoints = 0;
         else
-            healthPoints -= damage;
-        return healthPoints;
+            this.healthPoints -= damage;
     }
 
     /**
@@ -108,14 +96,13 @@ public abstract class Character {
      */
     public void updateLevel() {
         // проверяем уровень персонажа
-        if (this.level < 8 && this.experience >= maxXP) {
+        if (this.level < 7 && this.experience >= maxXP) {
             // если очки XP чуть больше, чем требуется дл перехода, то переносим остатки на следующий уровень
             this.experience = this.experience - maxXP;
             // апаем левел
             this.level++;
             maxXP = this.levelUp[this.level];
             maxHP += 10;
-            maxMana += 10;
         }
 
     }
@@ -126,5 +113,14 @@ public abstract class Character {
         if (val > limit)
             val = limit;
         return val;
+    }
+
+    @Override
+    public String toString() {
+        return name +
+                "(level=" + level +
+                ", healthPoints=" + healthPoints +
+                ", experience=" + experience +
+                ')';
     }
 }
